@@ -1,0 +1,33 @@
+1. Authentication and role-based access
+
+Login for Admin, Manager and Employee. Each role gets different pages and permissions.
+
+
+
+2. Employee management
+
+Add, view, edit and deactivate employee records, including department, designation and contact details.
+
+
+
+3. Project and team management
+
+Create projects, assign managers, organize teams and associate employees with projects.
+
+
+
+4. Task management
+
+Assign tasks, set deadlines and track Pending, In Progress and Completed tasks.
+
+
+
+5. Attendance and leave
+
+Record daily attendance, view attendance history and manage leave requests.
+
+
+
+6. Admin dashboard and reports
+
+Employee count, task completion rate, attendance trends and project summaries using charts.

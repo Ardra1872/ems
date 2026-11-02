@@ -1,0 +1,134 @@
+EMS - CURRENT FUNCTIONALITY INVENTORY
+=====================================
+
+Snapshot of the functionality currently present in this project, grouped by
+public, shared, and role-specific workflows.
+
+
+PUBLIC WORKFLOW AND ACCOUNT ACCESS
+----------------------------------
+- Public landing page describes the EMS workspace and links to sign-in.
+- Users sign in with their work email and password.
+- The backend uses a session and resolves the signed-in user's role and profile
+  from the linked employee record.
+- Inactive accounts cannot sign in.
+- Signing out ends the session.
+- When an administrator creates an employee, manager, or admin account, the
+  system generates a temporary password and shows it after creation.
+- A user with a temporary password must set a new password before reaching the
+  rest of the application. The new password must have at least 12 characters
+  and match its confirmation.
+
+
+ADMIN
+-----
+- Dashboard: organization-wide workforce, attendance, task, and project
+  summaries, including KPI cards, attendance trends, task-status chart,
+  department distribution, and project progress.
+- Employee management:
+  - View, search, and filter employee records; switch between table and grid.
+  - Create employee, manager, and admin records with work email, department,
+    designation, contact details, role, status, salary, and joining date.
+  - Create the associated login account and view its temporary password once
+    after successful creation.
+  - Edit employee records, activate/deactivate accounts, and delete records.
+- Projects and teams: view projects they manage; create projects owned by their
+  account; edit and delete only their own projects;
+  assign a manager/lead; set client, dates, status, priority, and progress; and
+  organize a project squad from active employees.
+- Tasks: create and assign tasks; edit or delete tasks; change task status.
+  Tasks support a title, description, project, assignee, priority, status, and
+  deadline.
+- Attendance and leave:
+  - View attendance records across employees and manually record attendance.
+  - View leave requests and approve/reject requests with reviewer comments.
+- Reports: view workforce, project, task, attendance, and leave metrics; view
+  project and department breakdowns; use the browser print dialog to print the
+  report.
+
+
+MANAGER
+-------
+- Dashboard: statistics scoped to projects managed by the manager and relevant
+  department/project team employees.
+- Employee directory: view and search the workforce in read-only mode.
+- Projects and teams: view all projects; create, edit, and delete projects;
+  assign a project manager/lead; and organize squads from active employees.
+- Tasks: create/assign, edit, delete, filter, and update tasks only within
+  projects they manage.
+- Attendance and leave:
+  - View attendance records across employees and manually record attendance.
+  - Review leave requests and approve/reject them with reviewer comments.
+- Reports: view scoped project, task, attendance, leave, and workforce reports;
+  select a week, month, quarter, or year and print the report.
+
+
+EMPLOYEE
+--------
+- Dashboard: personal task counts (pending, in progress, completed), recent
+  assigned tasks, and projects linked to the employee's project squad.
+- Quick attendance: clock in and clock out from the dashboard. The dashboard
+  quick action uses Office work mode.
+- Employee directory: view/search employee profiles in the same department;
+  employee management actions are not shown.
+- Projects and teams: view projects linked to the employee's squad, including
+  project status, progress, manager, deadlines, and squad members. The project
+  API filters employee project reads by project membership.
+- Tasks: view only assigned tasks, search and filter them, switch between board
+  and list views, and advance status from Pending to In Progress to Completed.
+  Task creation, reassignment, detail edits, and deletion are unavailable.
+- Attendance and leave:
+  - Select Office or Remote and clock in/out; view the employee's own attendance
+    history.
+  - Apply for casual, sick, annual, parental, or unpaid leave with dates,
+    duration, and reason; view the employee's own requests and review comments.
+- Reports are not included in the employee navigation.
+
+
+FUNCTIONALITY SHARED ACROSS ROLES
+---------------------------------
+- Dashboard, employee directory, projects, tasks, and attendance/leave sections
+  are available from the in-app navigation.
+- Search and status/department/priority filters are provided where applicable.
+- Projects display team membership, progress, priority, status, and deadlines.
+- Tasks have Pending, In Progress, and Completed states; overdue tasks are
+  highlighted.
+- Attendance records include date, check-in/out, duration, status, and work
+  mode. Leave requests include type, dates, duration, reason, status, and
+  reviewer comments.
+
+
+CURRENT AUTHORIZATION AND BUSINESS RULES
+----------------------------------------
+- Backend role checks protect employee, project, task, attendance, and leave
+  operations. Employee profile writes are admin-only.
+- Managers are scoped to projects whose persisted manager_id matches their
+  employee record. For team and attendance/leave scope, managers can access
+  employees in their department or teams on projects they manage. Managers
+  cannot change project ownership.
+- Employees can read only their assigned tasks and squad projects, can update
+  only their own task status in sequence, and cannot use task-management
+  endpoints. Their attendance and leave reads/actions are bound to their own
+  authenticated employee record.
+- Non-admin employee-directory responses omit salary. Employee directory scope
+  is the authenticated employee's department.
+- Project squad members must be active. Task assignments must reference a
+  valid project and an active project member. Task deadlines cannot precede
+  creation date. Completed tasks are retained; project deletion is blocked
+  when task history exists.
+- Leave requests validate date order, reject past starts and overlapping
+  pending/approved requests. Only admins and managers can review requests, and
+  reviewers cannot approve their own leave. Manager leave review is limited to
+  authorized employees.
+- Attendance clock-in/out uses the authenticated employee and server time;
+  employees cannot submit arbitrary employee IDs or manual historical records.
+  Manager/admin manual corrections are audited.
+- Important account, project, task, attendance, and leave operations are
+  written to audit_logs. The audit table is created by
+  ems-backend/migrations/migrate_audit_logs.php.
+- Report date filters query actual task creation, attendance, and leave
+  application dates. Workforce and project-progress cards remain current
+  snapshots, not historical point-in-time reports.
+- Employee leave-balance cards calculate approved usage from persisted leave
+  requests using the current UI policy allowances (12 casual, 10 sick, 20
+  annual days). These allowances are not yet configurable per employee.
